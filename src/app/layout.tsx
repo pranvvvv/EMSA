@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} font-sans bg-aqua-white text-gray-800`}>
+      <body className={`${poppins.variable} font-sans bg-white text-secondary-800`} suppressHydrationWarning={true}>
         <CartProvider>
           <AppLayout>{children}</AppLayout>
         </CartProvider>

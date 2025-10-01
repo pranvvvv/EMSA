@@ -4,21 +4,29 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 // Define the types
 interface Product {
+  id: string;
   name: string;
-  flavor: 'Rose' | 'Lime';
+  category: 'Phenyl' | 'Room Care';
+  flavor?: 'Rose' | 'Lime';
+  variant?: string;
   price: number;
   moqPrice: number;
+  size: string;
+  image?: string;
+  description: string;
 }
 
 interface CartItem extends Product {
   quantity: number;
 }
 
+
+
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (product: Product, quantity: number) => void;
-  removeFromCart: (productName: string) => void;
-  updateQuantity: (productName: string, quantity: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   totalPrice: number;
   totalQuantity: number;
   isMoqApplied: boolean;
@@ -34,6 +42,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+
   const toggleCart = () => setIsCartOpen(!isCartOpen);
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -45,10 +54,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (product: Product, quantity: number) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.name === product.name);
+      const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
         return prevItems.map(item =>
-          item.name === product.name
+          item.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -57,18 +66,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeFromCart = (productName: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.name !== productName));
+  const removeFromCart = (productId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
   };
 
-  const updateQuantity = (productName: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productName);
+      removeFromCart(productId);
       return;
     }
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.name === productName ? { ...item, quantity } : item
+        item.id === productId ? { ...item, quantity } : item
       )
     );
   };
@@ -85,6 +94,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         isMoqApplied,
         isCartOpen,
         toggleCart,
+
       }}
     >
       {children}
